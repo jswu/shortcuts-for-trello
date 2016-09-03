@@ -58,8 +58,11 @@
     "newboard": {
       "description": "Create a new board"
     },
-    "movetodone": {
+    "movecardtodone": {
       "description": "Move card to the 'Done' list"
+    },
+    "movecardtolist": {
+      "description": "Move card to a specific list"
     }
   }
 }

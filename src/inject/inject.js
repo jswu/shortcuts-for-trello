@@ -1,6 +1,10 @@
 /* global chrome */
-
 chrome.extension.sendMessage({}, function() {
+
+  // Hack ':contains' to be case-insensitive
+  $.expr[':'].contains = function(a, i, m) {
+      return jQuery(a).text().toUpperCase().indexOf(m[3].toUpperCase()) >= 0;
+  };
 
   var elm, card, readyStateCheckInterval;
 
@@ -15,7 +19,7 @@ chrome.extension.sendMessage({}, function() {
     card = $('.active-card');
     switch(request.command) {
         case 'movecard':
-          moveCard();
+          moveCard(card);
         break;
         case 'copycard':
           copyCard();
@@ -41,8 +45,12 @@ chrome.extension.sendMessage({}, function() {
         case 'newboard':
           newBoard();
         break;
-        case 'movetodone':
-          moveToDone();
+        case 'movecardtodone':
+          moveCardToDone();
+        break;
+        case 'movecardtolist':
+          var list_name = window.prompt();
+          moveCardToList(card, list_name);
         break;
     }
   }
@@ -201,7 +209,7 @@ chrome.extension.sendMessage({}, function() {
   };
 
   var DONE_LIST_NAME = 'Done';
-  var moveToDone = function() {
+  var moveCardToDone = function() {
     var $curCard = $('.active-card');
     var $nextCardInList = $curCard.next();
 
