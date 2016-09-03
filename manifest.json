@@ -25,7 +25,8 @@
       ],
       "js": [
         "src/inject/inject.js",
-        "vendor/jquery-2.1.1.min.js"
+        "vendor/jquery-2.1.1.min.js",
+        "vendor/underscore-min.js"
       ]
     }
   ],
@@ -57,6 +58,6 @@
     "newboard": {
       "description": "Create a new board"
     }
-    
+
   }
 }
