@@ -41,6 +41,9 @@ chrome.extension.sendMessage({}, function() {
         case 'newboard':
           newBoard();
         break;
+        case 'movetodone':
+          moveToDone();
+        break;
     }
   }
 
@@ -150,4 +153,53 @@ chrome.extension.sendMessage({}, function() {
     }
   }
 
+  // I thought there was a bug with double selections at first, but doesn't seem
+  // like this is actually needed?
+  var clearSelectedOptions = function($elem) {
+    _.each($elem, function(child) {
+      $(child).removeAttr('selected');
+    });
+  };
+
+  var moveCardToList = function(curCard, listName) {
+    if (curCard.length !== 1) return;
+
+    curCard.find('span.list-card-operation').trigger('click');
+    var moveButton = document.querySelector('a.js-move-card');
+    moveButton.click();
+
+    // Select the list in the move dropdown
+    clearSelectedOptions($('.js-select-list option'));
+    var doneOption = $('.js-select-list option:contains("' + listName + '")');
+    doneOption.attr('selected', 'selected');
+
+    // Select first position in the list
+    clearSelectedOptions($('.js-select-position option'));
+    var bottomOption = $('.js-select-position option').first();
+    bottomOption.attr('selected', 'selected').change();
+
+    // Perform the move
+    $('input[value="Move"]').click();
+  };
+
+  var moveCardDown = function(curCard) {
+    if (curCard.length !== 1) return;
+
+    curCard.find('span.list-card-operation').trigger('click');
+    elm = document.querySelector('a.js-move-card');
+
+    elm.click();
+    $('.js-select-position').children().last().attr('selected', 'selected');
+    $('input[value="Move"]').click();
+  };
+
+  var DONE_LIST_NAME = 'Done';
+  var moveToDone = function() {
+    var curCard = $('.active-card');
+    moveCardToList(curCard, DONE_LIST_NAME);
+
+    curCard = $('.active-card');
+    moveCardDown(curCard);
+    // TODO: Set focus (.active-card) to the immediately next card here
+  };
 });

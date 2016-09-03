@@ -57,7 +57,9 @@
     },
     "newboard": {
       "description": "Create a new board"
+    },
+    "movetodone": {
+      "description": "Move card to the 'Done' list"
     }
-
   }
 }
