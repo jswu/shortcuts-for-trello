@@ -46,11 +46,10 @@ chrome.extension.sendMessage({}, function() {
           newBoard();
         break;
         case 'movecardtodone':
-          moveCardToDone();
+          moveCardToDoneCommand();
         break;
         case 'movecardtolist':
-          var list_name = window.prompt();
-          moveCardToList(card, list_name);
+          moveCardToListCommand()
         break;
     }
   }
@@ -209,7 +208,7 @@ chrome.extension.sendMessage({}, function() {
   };
 
   var DONE_LIST_NAME = 'Done';
-  var moveCardToDone = function() {
+  var moveCardToDoneCommand = function() {
     var $curCard = $('.active-card');
     var $nextCardInList = $curCard.next();
 
@@ -218,6 +217,16 @@ chrome.extension.sendMessage({}, function() {
     $curCard = $('.active-card');
     moveCardDown($curCard);
 
+    setActiveCard($nextCardInList);
+  };
+
+  var moveCardToListCommand = function() {
+    var list_name = window.prompt();
+
+    var $curCard = $('.active-card');
+    var $nextCardInList = $curCard.next();
+
+    moveCardToList($curCard, list_name);
     setActiveCard($nextCardInList);
   };
 });
