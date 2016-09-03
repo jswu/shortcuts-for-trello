@@ -193,13 +193,23 @@ chrome.extension.sendMessage({}, function() {
     $('input[value="Move"]').click();
   };
 
+  // Sets the focus (.active-card) to the given card
+  var setActiveCard = function($card) {
+    // First unselect all other .active-card's
+    $('.active-card').removeClass('active-card');
+    $card.addClass('active-card');
+  };
+
   var DONE_LIST_NAME = 'Done';
   var moveToDone = function() {
-    var curCard = $('.active-card');
-    moveCardToList(curCard, DONE_LIST_NAME);
+    var $curCard = $('.active-card');
+    var $nextCardInList = $curCard.next();
 
-    curCard = $('.active-card');
-    moveCardDown(curCard);
-    // TODO: Set focus (.active-card) to the immediately next card here
+    moveCardToList($curCard, DONE_LIST_NAME);
+
+    $curCard = $('.active-card');
+    moveCardDown($curCard);
+
+    setActiveCard($nextCardInList);
   };
 });
