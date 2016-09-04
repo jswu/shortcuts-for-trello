@@ -49,10 +49,16 @@ chrome.extension.sendMessage({}, function() {
           moveCardToDoneCommand();
         break;
         case 'movecardtolist':
-          moveCardToListCommand()
+          moveCardToListCommand();
         break;
         case 'movecardtoposition':
-          moveCardToPositionCommand()
+          moveCardToPositionCommand();
+        break;
+        case 'sortcardbylabel':
+          // Move the card to the position above the first card with the same
+          // label in the list.
+          // Uses the first label of the selected card.
+          sortCardByLabelCommand();
         break;
     }
   }
@@ -184,14 +190,16 @@ chrome.extension.sendMessage({}, function() {
       $doneOption.attr('selected', 'selected');
     }
 
-    // Move to appropriate position
-    var $positionOptions = $('.js-select-position option');
+    if (typeof(position) === 'number') {
+      // Move to appropriate position
+      var $positionOptions = $('.js-select-position option');
 
-    // Cap the position to the list length, and subtract 1 for 0-index
-    var positionIndex = Math.min(position, $positionOptions.length) - 1;
+      // Cap the position to the list length, and subtract 1 for 0-index
+      var positionIndex = Math.min(position, $positionOptions.length) - 1;
 
-    var $positionOption = $($positionOptions[positionIndex])
-    $positionOption.attr('selected', 'selected').change();
+      var $positionOption = $($positionOptions[positionIndex])
+      $positionOption.attr('selected', 'selected');
+    }
 
     // Perform the move
     $('input[value="Move"]').click();
@@ -247,6 +255,39 @@ chrome.extension.sendMessage({}, function() {
     var $nextCardInList = $curCard.next();
 
     var position = parseInt(positionString);
+    moveCardToList($curCard, null, position);
+    setActiveCard($nextCardInList);
+  };
+
+  var getIndexOfFirstLabel = function($labelElems, label) {
+    var index = _.findIndex($labelElems, function(elem) {
+      labelSpans = $(elem).find('.card-label');
+
+      return _.any(labelSpans, function(labelSpan) {
+        return $(labelSpan).prop('title') === label;
+      });
+    });
+
+    return (index === -1) ? null : index;
+  };
+
+  // Return 1-indexed sorted position
+  var getSortedPosition = function($card) {
+    var $labelElems = $card.parent().find('.list-card-labels');
+    var label = $($card.find('.card-label')[0]).prop('title');
+
+    var positionIndex = getIndexOfFirstLabel($labelElems, label);
+
+    return (positionIndex === null) ? null : positionIndex + 1;
+  };
+
+  var sortCardByLabelCommand = function() {
+    var $curCard = $('.active-card');
+    var $nextCardInList = $curCard.next();
+
+    var position = getSortedPosition($curCard);
+    if (position === null) return;
+
     moveCardToList($curCard, null, position);
     setActiveCard($nextCardInList);
   };

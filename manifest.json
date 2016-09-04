@@ -65,7 +65,10 @@
       "description": "Move card to a given list"
     },
     "movecardtoposition": {
-      "description": "Move card to a given position in the list"
+      "description": "Move card to a given position"
+    },
+    "sortcardbylabel": {
+      "description": "Sort card in list by label"
     }
   }
 }
