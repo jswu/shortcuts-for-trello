@@ -269,12 +269,18 @@ chrome.extension.sendMessage({}, function() {
     setActiveCard($nextCardInList);
   };
 
-  var getIndexOfFirstLabel = function($labelElems, label) {
-    var index = _.findIndex($labelElems, function(elem) {
-      labelSpans = $(elem).find('.card-label');
+  var getIndexOfFirstLabel = function($labelsElems, $targetLabelElem) {
+    var label = $targetLabelElem.prop('title');
+    var index = _.findIndex($labelsElems, function(labelsElem) {
+      var $labelElems = $(labelsElem).find('.card-label');
 
-      return _.any(labelSpans, function(labelSpan) {
-        return $(labelSpan).prop('title') === label;
+      return _.any($labelElems, function(labelElem) {
+        var $labelElem = $(labelElem);
+
+        // Skip self. Need to compare the raw DOM elements
+        if ($labelElem[0] == $targetLabelElem[0]) return;
+
+        return $labelElem.prop('title') === label;
       });
     });
 
@@ -283,9 +289,10 @@ chrome.extension.sendMessage({}, function() {
 
   // Return 1-indexed sorted position
   var getSortedPosition = function($card) {
-    var $labelElems = $card.parent().find('.list-card-labels'); var label = $($card.find('.card-label')[0]).prop('title');
+    var $labelsElems = $card.parent().find('.list-card-labels');
+    var $targetLabelElem = $($card.find('.card-label')[0])
 
-    var positionIndex = getIndexOfFirstLabel($labelElems, label);
+    var positionIndex = getIndexOfFirstLabel($labelsElems, $targetLabelElem);
 
     return (positionIndex === null) ? null : positionIndex + 1;
   };
