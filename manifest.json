@@ -62,7 +62,10 @@
       "description": "Move card to the 'Done' list"
     },
     "movecardtolist": {
-      "description": "Move card to a specific list"
+      "description": "Move card to a given list"
+    },
+    "movecardtoposition": {
+      "description": "Move card to a given position in the list"
     }
   }
 }

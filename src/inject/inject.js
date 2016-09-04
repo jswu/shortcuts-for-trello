@@ -51,6 +51,9 @@ chrome.extension.sendMessage({}, function() {
         case 'movecardtolist':
           moveCardToListCommand()
         break;
+        case 'movecardtoposition':
+          moveCardToPositionCommand()
+        break;
     }
   }
 
@@ -168,22 +171,27 @@ chrome.extension.sendMessage({}, function() {
     });
   };
 
-  var moveCardToList = function(curCard, listName) {
+  var moveCardToList = function(curCard, listName, position = 1) {
     if (curCard.length !== 1) return;
 
     curCard.find('span.list-card-operation').trigger('click');
     var moveButton = document.querySelector('a.js-move-card');
     moveButton.click();
 
-    // Select the list in the move dropdown
-    clearSelectedOptions($('.js-select-list option'));
-    var doneOption = $('.js-select-list option:contains("' + listName + '")');
-    doneOption.attr('selected', 'selected');
+    if (typeof(listName) === 'string') {
+      // Select the list in the move dropdown
+      var $doneOption = $('.js-select-list option:contains("' + listName + '")');
+      $doneOption.attr('selected', 'selected');
+    }
 
-    // Select first position in the list
-    clearSelectedOptions($('.js-select-position option'));
-    var bottomOption = $('.js-select-position option').first();
-    bottomOption.attr('selected', 'selected').change();
+    // Move to appropriate position
+    var $positionOptions = $('.js-select-position option');
+
+    // Cap the position to the list length, and subtract 1 for 0-index
+    var positionIndex = Math.min(position, $positionOptions.length) - 1;
+
+    var $positionOption = $($positionOptions[positionIndex])
+    $positionOption.attr('selected', 'selected').change();
 
     // Perform the move
     $('input[value="Move"]').click();
@@ -221,12 +229,25 @@ chrome.extension.sendMessage({}, function() {
   };
 
   var moveCardToListCommand = function() {
-    var list_name = window.prompt();
+    var listName = window.prompt('Move to list name (case-insensitive substring):');
+    if (typeof(listName) !== 'string' || listName === '') return;
 
     var $curCard = $('.active-card');
     var $nextCardInList = $curCard.next();
 
-    moveCardToList($curCard, list_name);
+    moveCardToList($curCard, listName);
+    setActiveCard($nextCardInList);
+  };
+
+  var moveCardToPositionCommand = function() {
+    var positionString = window.prompt('Move to position:');
+    if (typeof(positionString) !== 'string' || positionString === '') return;
+
+    var $curCard = $('.active-card');
+    var $nextCardInList = $curCard.next();
+
+    var position = parseInt(positionString);
+    moveCardToList($curCard, null, position);
     setActiveCard($nextCardInList);
   };
 });
