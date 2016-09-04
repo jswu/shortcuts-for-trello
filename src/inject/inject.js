@@ -271,6 +271,8 @@ chrome.extension.sendMessage({}, function() {
 
   var getIndexOfFirstLabel = function($labelsElems, $targetLabelElem) {
     var label = $targetLabelElem.prop('title');
+    var offset = 0;
+
     var index = _.findIndex($labelsElems, function(labelsElem) {
       var $labelElems = $(labelsElem).find('.card-label');
 
@@ -278,13 +280,18 @@ chrome.extension.sendMessage({}, function() {
         var $labelElem = $(labelElem);
 
         // Skip self. Need to compare the raw DOM elements
-        if ($labelElem[0] == $targetLabelElem[0]) return;
+        if ($labelElem[0] == $targetLabelElem[0]) {
+          // Since we've passed this card itself, we need to offset the final
+          // position to account for this card being moved.
+          offset = -1;
+          return false;
+        }
 
         return $labelElem.prop('title') === label;
       });
     });
 
-    return (index === -1) ? null : index;
+    return (index === -1) ? null : index + offset;
   };
 
   // Return 1-indexed sorted position
