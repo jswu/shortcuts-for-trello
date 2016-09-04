@@ -218,9 +218,12 @@ chrome.extension.sendMessage({}, function() {
 
   // Sets the focus (.active-card) to the given card
   var setActiveCard = function($card) {
-    // First unselect all other .active-card's
-    $('.active-card').removeClass('active-card');
-    $card.addClass('active-card');
+    // Let the DOM settle first
+    setTimeout(function() {
+      // First unselect all other .active-card's
+      $('.active-card').removeClass('active-card');
+      $card.addClass('active-card');
+    }, 0);
   };
 
   var DONE_LIST_NAME = 'Done';
