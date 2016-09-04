@@ -243,7 +243,17 @@ chrome.extension.sendMessage({}, function() {
     var $curCard = $('.active-card');
     var $nextCardInList = $curCard.next();
 
+    // Move card to target list
     moveCardToList($curCard, listName);
+
+    // Grab the card again, since it moved
+    $curCard = $('.active-card');
+
+    // Sort the card in new list by priority
+    var position = getSortedPosition($curCard);
+    moveCardToList($curCard, null, position);
+
+    // Focus the next card in original list
     setActiveCard($nextCardInList);
   };
 
@@ -273,8 +283,7 @@ chrome.extension.sendMessage({}, function() {
 
   // Return 1-indexed sorted position
   var getSortedPosition = function($card) {
-    var $labelElems = $card.parent().find('.list-card-labels');
-    var label = $($card.find('.card-label')[0]).prop('title');
+    var $labelElems = $card.parent().find('.list-card-labels'); var label = $($card.find('.card-label')[0]).prop('title');
 
     var positionIndex = getIndexOfFirstLabel($labelElems, label);
 
